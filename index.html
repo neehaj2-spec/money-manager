@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Money Manager - track income, expenses and savings.">
+<title>Money Manager</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --dark: #111827;
+  --green: #16a34a;
+  --red: #dc2626;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  transition: .2s;
+}
+
+body.dark {
+  --bg: #0b1120;
+  --card: #111827;
+  --text: #f9fafb;
+  --muted: #9ca3af;
+  --line: #263244;
+  --dark: #020617;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* PIN */
+
+.pin-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #111827, #374151);
+}
+
+.pin-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  color: #111827;
+  padding: 32px;
+  border-radius: 28px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,.3);
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: #111827;
+  color: white;
+  display: grid;
+  place-items: center;
+  margin: auto;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.pin-card h1 {
+  margin-bottom: 8px;
+}
+
+.pin-card p {
+  color: #6b7280;
+}
+
+#pinInput {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 25px;
+  letter-spacing: 10px;
+}
+
+.primary {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border-radius: 13px;
+  background: #111827;
+  color: white;
+  font-weight: bold;
+}
+
+/* HEADER */
+
+header {
+  background: var(--dark);
+  color: white;
+  padding: 20px;
+}
+
+.header-inner {
+  max-width: 1050px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: .6;
+}
+
+.theme {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: white;
+  color: #111827;
+  font-size: 20px;
+}
+
+/* CONTENT */
+
+.container {
+  max-width: 1050px;
+  margin: auto;
+  padding: 20px 15px 50px;
+}
+
+.balance {
+  background: var(--dark);
+  color: white;
+  border-radius: 24px;
+  padding: 28px;
+}
+
+.balance p {
+  opacity: .65;
+}
+
+.balance h2 {
+  font-size: 42px;
+  margin: 5px 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.stat,
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.06);
+}
+
+.stat span {
+  color: var(--muted);
+}
+
+.stat strong {
+  display: block;
+  font-size: 23px;
+  margin-top: 5px;
+}
+
+.income {
+  color: var(--green);
+}
+
+.expense {
+  color: var(--red);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 14px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 19px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.secondary,
+.danger {
+  padding: 12px 16px;
+  margin-top: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.secondary {
+  background: #e9edf2;
+  color: #111827;
+}
+
+.dark .secondary {
+  background: #1f2937;
+  color: white;
+}
+
+.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* GOAL */
+
+.goal-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  font-size: 13px;
+}
+
+.goal-info span {
+  color: var(--muted);
+}
+
+.progress {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background: #22c55e;
+  transition: .3s;
+}
+
+/* TRANSACTIONS */
+
+.transactions-card {
+  margin-top: 14px;
+}
+
+.transaction-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.search {
+  max-width: 220px;
+  margin: 0;
+}
+
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-top: 1px solid var(--line);
+}
+
+.transaction-name {
+  font-weight: bold;
+}
+
+.transaction-meta {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.transaction-right {
+  text-align: right;
+}
+
+.delete {
+  background: transparent;
+  color: var(--red);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.actions button,
+.actions label {
+  margin-top: 0;
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 25px;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transaction-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  .balance h2 {
+    font-size: 35px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PIN SCREEN -->
+
+<div id="pinScreen" class="pin-screen">
+
+  <div class="pin-card">
+
+    <div class="logo">₹</div>
+
+    <h1>Money Manager</h1>
+
+    <p id="pinMessage">
+      Create a 4-digit PIN.
+    </p>
+
+    <input
+      id="pinInput"
+      type="password"
+      maxlength="4"
+      inputmode="numeric"
+      placeholder="••••"
+    >
+
+    <button
+      class="primary"
+      onclick="unlock()">
+      Continue
+    </button>
+
+    <p style="font-size:12px">
+      Your information is stored locally on this device.
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- APP -->
+
+<div id="app" class="hidden">
+
+<header>
+
+  <div class="header-inner">
+
+    <div>
+      <div class="eyebrow">PERSONAL FINANCE</div>
+      <h1>💰 Money Manager</h1>
+    </div>
+
+    <button
+      class="theme"
+      onclick="toggleDark()">
+      ☾
+    </button>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+<!-- BALANCE -->
+
+<section class="balance">
+
+  <p>Available Balance</p>
+
+  <h2 id="balance">
+    ₹0
+  </h2>
+
+</section>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+  <div class="stat">
+
+    <span>Income</span>
+
+    <strong
+      class="income"
+      id="income">
+      ₹0
+    </strong>
+
+  </div>
+
+
+  <div class="stat">
+
+    <span>Expenses</span>
+
+    <strong
+      class="expense"
+      id="expenses">
+      ₹0
+    </strong>
+
+  </div>
+
+</section>
+
+
+<div class="grid">
+
+<!-- ADD -->
+
+<section class="card">
+
+  <h2>➕ Add Transaction</h2>
+
+  <div class="form-grid">
+
+    <label>
+      Description
+
+      <input
+        id="description"
+        maxlength="80"
+        placeholder="e.g. Lunch">
+    </label>
+
+
+    <label>
+      Amount
+
+      <input
+        id="amount"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="₹0">
+    </label>
+
+
+    <label>
+      Type
+
+      <select id="type">
+
+        <option value="expense">
+          Expense 💸
+        </option>
+
+        <option value="income">
+          Income 💵
+        </option>
+
+      </select>
+
+    </label>
+
+
+    <label>
+      Category
+
+      <select id="category">
+
+        <option>Food</option>
+        <option>Transport</option>
+        <option>Shopping</option>
+        <option>Bills</option>
+        <option>Entertainment</option>
+        <option>Education</option>
+        <option>Health</option>
+        <option>Other</option>
+
+      </select>
+
+    </label>
+
+  </div>
+
+
+  <button
+    class="primary"
+    onclick="addTransaction()">
+    Add Transaction
+  </button>
+
+</section>
+
+
+<!-- SAVINGS -->
+
+<section class="card">
+
+  <h2>🎯 Savings Goal</h2>
+
+  <label>
+    Goal Amount
+
+    <input
+      id="goal"
+      type="number"
+      min="0"
+      placeholder="₹10,000">
+  </label>
+
+
+  <button
+    class="secondary"
+    onclick="setGoal()">
+    Set Goal
+  </button>
+
+
+  <div class="goal-info">
+
+    <span id="goalText">
+      No goal set
+    </span>
+
+    <strong id="goalPercent">
+      0%
+    </strong>
+
+  </div>
+
+
+  <div class="progress">
+
+    <div
+      id="progressBar"
+      class="progress-bar">
+    </div>
+
+  </div>
+
+</section>
+
+</div>
+
+
+<!-- TRANSACTIONS -->
+
+<section class="card transactions-card">
+
+  <div class="transaction-head">
+
+    <h2>🧾 Transactions</h2>
+
+    <input
+      class="search"
+      id="search"
+      placeholder="Search">
+
+  </div>
+
+
+  <div id="transactions"></div>
+
+  <div
+    id="empty"
+    class="empty">
+    No transactions yet.
+  </div>
+
+</section>
+
+
+<!-- ACTIONS -->
+
+<section class="actions">
+
+  <button
+    class="secondary"
+    onclick="exportData()">
+    📤 Export
+  </button>
+
+
+  <label class="secondary">
+
+    📥 Import
+
+    <input
+      type="file"
+      accept=".json"
+      hidden
+      onchange="importData(event)">
+
+  </label>
+
+
+  <button
+    class="danger"
+    onclick="lockApp()">
+    🔒 Lock
+  </button>
+
+</section>
+
+
+<p class="footer">
+  Money Manager is a budgeting tool, not a bank or financial service.
+</p>
+
+</main>
+
+</div>
+
+
+<script>
+
+const STORAGE_KEY =
+  "money_manager_public_v1";
+
+
+let data =
+  JSON.parse(
+    localStorage.getItem(STORAGE_KEY)
+  ) || {
+
+    pin: null,
+
+    transactions: [],
+
+    goal: 0,
+
+    dark: false
+
+  };
+
+
+/* SAVE */
+
+function save() {
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+
+}
+
+
+/* MONEY */
+
+function money(number) {
+
+  return "₹" +
+    Number(number)
+      .toLocaleString(
+        "en-IN",
+        {
+          maximumFractionDigits: 2
+        }
+      );
+
+}
+
+
+/* ESCAPE TEXT */
+
+function safe(text) {
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* PIN */
+
+function unlock() {
+
+  const pin =
+    document.getElementById(
+      "pinInput"
+    ).value;
+
+
+  if (!/^\d{4}$/.test(pin)) {
+
+    alert(
+      "Please enter exactly 4 digits."
+    );
+
+    return;
+
+  }
+
+
+  if (!data.pin) {
+
+    data.pin = pin;
+
+    save();
+
+    alert("PIN created!");
+
+    openApp();
+
+  }
+
+  else if (pin === data.pin) {
+
+    openApp();
+
+  }
+
+  else {
+
+    alert("Wrong PIN!");
+
+  }
+
+}
+
+
+function openApp() {
+
+  document
+    .getElementById("pinScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+  render();
+
+}
+
+
+/* ADD TRANSACTION */
+
+function addTransaction() {
+
+  const description =
+    document
+      .getElementById("description")
+      .value
+      .trim();
+
+
+  const amount =
+    Number(
+      document
+        .getElementById("amount")
+        .value
+    );
+
+
+  const type =
+    document
+      .getElementById("type")
+      .value;
+
+
+  const category =
+    document
+      .getElementById("category")
+      .value;
+
+
+  if (
+    !description ||
+    !(amount > 0)
+  ) {
+
+    alert(
+      "Please enter a description and valid amount."
+    );
+
+    return;
+
+  }
+
+
+  data.transactions.push({
+
+    id:
+      Date.now(),
+
+    description:
+      description,
+
+    amount:
+      amount,
+
+    type:
+      type,
+
+    category:
+      category,
+
+    date:
+      new Date().toISOString()
+
+  });
+
+
+  save();
+
+
+  document
+    .getElementById("description")
+    .value = "";
+
+
+  document
+    .getElementById("amount")
+    .value = "";
+
+
+  render();
+
+}
+
+
+/* DELETE */
+
+function deleteTransaction(id) {
+
+  data.transactions =
+    data.transactions.filter(
+      transaction =>
+        transaction.id !== id
+    );
+
+
+  save();
+
+  render();
+
+}
+
+
+/* RENDER */
+
+function render() {
+
+  let income = 0;
+
+  let expenses = 0;
+
+
+  data.transactions.forEach(
+    transaction => {
+
+      if (
+        transaction.type === "income"
+      ) {
+
+        income +=
+          transaction.amount;
+
+      }
+
+      else {
+
+        expenses +=
+          transaction.amount;
+
+      }
+
+    }
+  );
+
+
+  const balance =
+    income - expenses;
+
+
+  document
+    .getElementById("balance")
+    .innerText =
+    money(balance);
+
+
+  document
+    .getElementById("income")
+    .innerText =
+    money(income);
+
+
+  document
+    .getElementById("expenses")
+    .innerText =
+    money(expenses);
+
+
+  renderTransactions();
+
+
+  renderGoal(balance);
+
+}
+
+
+/* TRANSACTIONS */
+
+function renderTransactions() {
+
+  const search =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  const container =
+    document
+      .getElementById("transactions");
+
+
+  const filtered =
+    [...data.transactions]
+      .reverse()
+      .filter(
+        transaction =>
+          (
+            transaction.description +
+            " " +
+            transaction.category
+          )
+          .toLowerCase()
+          .includes(search)
+      );
+
+
+  container.innerHTML = "";
+
+
+  document
+    .getElementById("empty")
+    .style.display =
+      filtered.length
+        ? "none"
+        : "block";
+
+
+  filtered.forEach(
+    transaction => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "transaction";
+
+
+      const positive =
+        transaction.type ===
+        "income";
+
+
+      row.innerHTML = `
+
+        <div>
+
+          <div class="transaction-name">
+            ${safe(
+              transaction.description
+            )}
+          </div>
+
+          <div class="transaction-meta">
+
+            ${safe(
+              transaction.category
+            )}
+
+            ·
+
+            ${new Date(
+              transaction.date
+            ).toLocaleDateString(
+              "en-IN"
+            )}
+
+          </div>
+
+        </div>
+
+
+        <div class="transaction-right">
+
+          <strong
+            class="${
+              positive
+              ? "income"
+              : "expense"
+            }">
+
+            ${positive ? "+" : "-"}
+
+            ${money(
+              transaction.amount
+            )}
+
+          </strong>
+
+          <br>
+
+          <button
+            class="delete"
+            onclick="deleteTransaction(
+              ${transaction.id}
+            )">
+
+            Delete
+
+          </button>
+
+        </div>
+
+      `;
+
+
+      container.appendChild(row);
+
+    }
+  );
+
+}
+
+
+/* GOAL */
+
+function setGoal() {
+
+  const goal =
+    Number(
+      document
+        .getElementById("goal")
+        .value
+    );
+
+
+  if (!(goal > 0)) {
+
+    alert(
+      "Enter a valid goal amount."
+    );
+
+    return;
+
+  }
+
+
+  data.goal = goal;
+
+  save();
+
+  document
+    .getElementById("goal")
+    .value = "";
+
+
+  render();
+
+}
+
+
+function renderGoal(balance) {
+
+  if (!data.goal) {
+
+    document
+      .getElementById("goalText")
+      .innerText =
+      "No goal set";
+
+
+    document
+      .getElementById("goalPercent")
+      .innerText =
+      "0%";
+
+
+    document
+      .getElementById("progressBar")
+      .style.width =
+      "0%";
+
+
+    return;
+
+  }
+
+
+  const percentage =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        (balance / data.goal) * 100
+      )
+    );
+
+
+  document
+    .getElementById("goalText")
+    .innerText =
+      money(
+        Math.max(0,balance)
+      )
+      +
+      " / "
+      +
+      money(data.goal);
+
+
+  document
+    .getElementById("goalPercent")
+    .innerText =
+      Math.round(
+        percentage
+      )
+      +
+      "%";
+
+
+  document
+    .getElementById("progressBar")
+    .style.width =
+      percentage + "%";
+
+}
+
+
+/* SEARCH */
+
+document
+  .getElementById("search")
+  .addEventListener(
+    "input",
+    renderTransactions
+  );
+
+
+/* DARK MODE */
+
+function toggleDark() {
+
+  data.dark =
+    !data.dark;
+
+  save();
+
+  applyTheme();
+
+}
+
+
+function applyTheme() {
+
+  document.body
+    .classList.toggle(
+      "dark",
+      data.dark
+    );
+
+}
+
+
+/* LOCK */
+
+function lockApp() {
+
+  document
+    .getElementById("app")
+    .classList.add("hidden");
+
+  document
+    .getElementById("pinScreen")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("pinInput")
+    .value = "";
+
+}
+
+
+/* EXPORT */
+
+function exportData() {
+
+  const backup = {
+
+    transactions:
+      data.transactions,
+
+    goal:
+      data.goal,
+
+    dark:
+      data.dark
+
+  };
+
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          backup,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+
+  const link =
+    document.createElement("a");
+
+
+  link.href =
+    URL.createObjectURL(blob);
+
+
+  link.download =
+    "money-manager-backup.json";
+
+
+  link.click();
+
+
+  URL.revokeObjectURL(
+    link.href
+  );
+
+}
+
+
+/* IMPORT */
+
+function importData(event) {
+
+  const file =
+    event.target.files[0];
+
+
+  if (!file)
+    return;
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function() {
+
+      try {
+
+        const imported =
+          JSON.parse(
+            reader.result
+          );
+
+
+        if (
+          !Array.isArray(
+            imported.transactions
+          )
+        ) {
+
+          throw new Error();
+
+        }
+
+
+        data.transactions =
+          imported.transactions;
+
+
+        data.goal =
+          Number(
+            imported.goal
+          ) || 0;
+
+
+        data.dark =
+          Boolean(
+            imported.dark
+          );
+
+
+        save();
+
+        render();
+
+        alert(
+          "Data imported successfully!"
+        );
+
+      }
+
+      catch {
+
+        alert(
+          "Invalid Money Manager backup."
+        );
+
+      }
+
+    };
+
+
+  reader.readAsText(file);
+
+}
+
+
+/* START */
+
+applyTheme();
+
+if (data.pin) {
+
+  document
+    .getElementById("pinMessage")
+    .innerText =
+    "Enter your 4-digit PIN.";
+
+}
+
+</script>
+
+</body>
+</html>
