@@ -1,0 +1,10 @@
+{
+  "name": "Money Manager",
+  "short_name": "Money Manager",
+  "description": "A simple money management app.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": []
+}
